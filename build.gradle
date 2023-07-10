@@ -1,0 +1,59 @@
+apply plugin: 'java'
+
+println "Building JSS Web Framework..."
+
+group 'jss.webframework'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+configurations {
+	// configuration that holds jars to include in the jar
+	extraLibs
+}
+
+repositories {
+	mavenCentral() 
+	jcenter()
+}
+
+dependencies {
+	compileOnly group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+	
+    implementation group: 'javax.servlet', name: 'jstl', version: '1.2'
+
+	//implementation fileTree(dir: 'WebContent/WEB-INF/lib', include: ['*.jar'])
+	//extraLibs fileTree(dir: 'WebContent/WEB-INF/lib', include: ['*.jar'])
+}
+
+buildDir = 'bin'
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src']
+		}
+		resources {
+			srcDirs = ['res']
+		}
+	}
+	test {
+		java {
+			srcDirs = ['test']
+		}
+	}
+}
+
+jar {
+	from {
+		configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
